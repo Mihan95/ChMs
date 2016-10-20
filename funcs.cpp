@@ -104,10 +104,26 @@ void filling_H_0(double *HL, double *HR, double *H, double *HB, double tau, doub
                                 + ro((n-1)*h) * ((-2.5) * u((n-2)*h) + 0.5 * u((n-4)*h) + u((n-3)*h)));
 }
 
-void filling_H(double *HL, double *HR, double *B, double tau, double h, int n, int i)
+void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i)
 {
     int i_tau = i * tau;
 
+    HR[0]  = tau * 0.5 * u(i_tau, h) / h;
+    H[0] = 1.0 - tau * 0.5 * u(i_tau, 0) / h;
+    HB[0]  = f0(i_tau, 0) + HB[0]
+            - (tau * 0.5 / h)
+            * (HB[0] * (u(i_tau, h) - u(i_tau, 0)) + 0.5 * (2.0 * HB[2] * u(i_tau, 2*h)
+                                                                   - 2.5 * HB[1] * u(i_tau, h)
+                                                                   + 2.0 * HB[0] * u(i_tau, 0)
+                                                                 - 0.5 * HB[3] * u(i_tau, 3*h)
+                                                          + HB[0] * (2 * u(i_tau, 2*h) - 2.5 * u(i_tau, h) - 0.5 * ro(i_tau, 3*h))));
+
+    double HM = HB[n-1], HM_1 = HB[n-2], HM_2 = HB[n-3], HM_3 = HB[n-4];
+
+    for (int j = 0; i < n - 1; j++)
+    {
+
+    }
 
 }
 
