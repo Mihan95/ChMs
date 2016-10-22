@@ -21,5 +21,4 @@ int main(int argc, char *argv[])
     double tau = T / (m - 1);
 
     calculate(H, HB, HL, HR, n, m, h, tau);
-
 }

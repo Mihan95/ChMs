@@ -43,6 +43,7 @@ double u(double x)
     return sin(M_PI*x*x*0.01);
 }
 
+
 void matrix_mult(double *b, double *a, double *c, double *d, double *x, int n)
 {
     x[0] = a[0] * b[0] + c[0] * b[1];
@@ -86,6 +87,7 @@ void ThreeDiagSolve( double *b, double *a, double *c, double *d, int n )
 
     for( int i = n - 2; i > -1; i-- )
         b[i] = b[i] - c[i] * b[i + 1];
+
 /*************************************************************/
     /*matrix_mult(b, ca, cc, cd, x, n);
     cout << "!!!!!!!!" << endl;
@@ -100,6 +102,7 @@ void ThreeDiagSolve( double *b, double *a, double *c, double *d, int n )
 double f0(double t, double x)
 {
     double pi_10 = M_PI / 10.0;
+
     return exp(t) * (1.5 + cos(pi_10*x))
          + pi_10 * exp(t) * cos(M_TWOPI*t)
             * (x * 0.2 * (1.5 + cos(pi_10*x)) * cos(M_PI*x*x*0.01) - sin(pi_10*x) * sin(M_PI*x*x*0.01));
@@ -108,6 +111,7 @@ double f0(double t, double x)
 double f(double t, double x)
 {
     double pi_10 = M_PI / 10.0;
+
     return M_PI*exp(t)*(cos(pi_10*x) + 1.5) * (cos(M_TWOPI*t) * sin(M_PI*x*x*0.01) * x*0.02* cos(M_TWOPI*t) * cos(M_PI*x*x*0.01)
                                               - 1.4 * sin(pi_10 * x) * exp(0.4 * t)
                                               - 2.0 * sin(M_TWOPI*t) * sin(M_PI*x*x*0.01))
@@ -195,7 +199,6 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     }
     cout << "\nResidual is " << res << endl << endl;
 }
-
 
 
 
