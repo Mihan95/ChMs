@@ -17,9 +17,9 @@ int main(int argc, char *argv[])
     double *HR = new double [n-1];
     double *HB = new double [n];
 
-    double *V  = new double [n-2];
-    double *VL = new double [n-3];
-    double *VR = new double [n-3];
+    double *V  = new double [n];
+    double *VL = new double [n-1];
+    double *VR = new double [n-1];
     double *VB = new double [n];
 
     double h   = X / (n - 1);

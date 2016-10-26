@@ -108,10 +108,10 @@ double f0(double t, double x)
 
 double f(double t, double x)
 {
-    return - ro(t, x) * sin(M_PI*x*x*0.01) * sin(M_TWOPI*t) * M_TWOPI
+    return (- ro(t, x) * sin(M_PI*x*x*0.01) * sin(M_TWOPI*t) * M_TWOPI
            + ro(t, x) * u(t, x) * cos(M_TWOPI*t) * cos(M_PI*x*x*0.01) * M_PI * x / 50.0
            - 1.4 * M_PI * 0.1 * exp(1.4*t) * sin(M_PI*x*0.1) * (cos(M_PI*x*0.1) + 1.5)
-           - MY * cos(M_TWOPI*t) * M_PI * 0.02 * (cos(M_PI*x*x*0.01) - M_PI*x*x*0.02 * sin(M_PI*x*x*0.01));
+           - MY * cos(M_TWOPI*t) * M_PI * 0.02 * (cos(M_PI*x*x*0.01) - M_PI*x*x*0.02 * sin(M_PI*x*x*0.01))) / ro(t, x);
 }
 
 void filling_H_0(double *HL, double *HR, double *H, double *HB, double tau, double h, int n)
@@ -146,14 +146,14 @@ void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double
     int i_tau = i * tau;
 
     HR[0]  = tau * 0.5 * u(i_tau, h) / h;
-    H[0] = 1.0 - tau * 0.5 * u(i_tau, 0) / h;
+    H[0] = 1.0 - tau * 0.5 * /*u(i_tau, 0)*/0 / h;
     HB[0]  = f0(i_tau, 0) + HB[0]
             - (tau * 0.5 / h)
-            * HB[0] * (u(i_tau, h) - u(i_tau, 0)) + (tau * 0.25 / h) * (2.0 * HB[2] * u(i_tau, 2*h)
+            * HB[0] * (u(i_tau, h) - /*u(i_tau, 0)*/0) + (tau * 0.25 / h) * (2.0 * HB[2] * u(i_tau, 2*h)
                                                                    - 2.5 * HB[1] * u(i_tau, h)
-                                                                   + 2.0 * HB[0] * u(i_tau, 0)
+                                                                   + 2.0 * HB[0] * /*u(i_tau, 0)*/0
                                                                  - 0.5 * HB[3] * u(i_tau, 3*h)
-                                                          + HB[0] * (2 * u(i_tau, 2*h) - 2.5 * u(i_tau, h) - 0.5 * ro(i_tau, 3*h)));
+                                                          + HB[0] * (2.0 * u(i_tau, 2*h) - 2.5 * u(i_tau, h) - 0.5 * ro(i_tau, 3*h)));
 
     double HM = HB[n-1], HM_1 = HB[n-2], HM_2 = HB[n-3], HM_3 = HB[n-4];
 
@@ -165,11 +165,11 @@ void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double
         HL[j-1] = - (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j-1)*h));
     }
 
-    HB[n-1] = f0(i_tau, (n-1)*h) + HM - (0.5 * tau / h) * HM * (u(i_tau, (n-1)*h) - u(i_tau, (n-2)*h))
-            - (0.25 * tau / h) * (2.0 * HM * u(i_tau, (n-1)*h) - 2.5 * HM_1 * u(i_tau, (n-2)*h)
+    HB[n-1] = f0(i_tau, (n-1)*h) + HM - (0.5 * tau / h) * HM * (/*u(i_tau, (n-1)*h)*/0 - u(i_tau, (n-2)*h))
+            - (0.25 * tau / h) * (2.0 * HM * 0/*u(i_tau, (n-1)*h)*/ - 2.5 * HM_1 * u(i_tau, (n-2)*h)
                                   + 2.0 * HM_2 * u(i_tau, (n-3)*h) - 0.5 * HM_3 * u(i_tau, (n-4)*h)
                                   + HM * (-0.5 * u(i_tau, (n-4)*h) - 2.5 * u(i_tau, (n-2)*h) + u(i_tau, (n-3)*h)));
-    H[n-1]  = 1.0 + (0.5 * tau / h) * u(i_tau, (n-1)*h);
+    H[n-1]  = 1.0 + (0.5 * tau / h) * 0/*u(i_tau, (n-1)*h)*/;
     HL[n-2] = - (0.5 * tau / h) * u(i_tau, (n-2)*h);
 }
 
@@ -208,14 +208,14 @@ void filling_V_0(double *VL, double *V, double *VR, double *VB, double tau, doub
              - (mu - MY/ro(tau, (n-2)*h)) * (u((n-1)*h) - 2 * u((n-2)*h) + u((n-3)*h)) / (h * h) + f(0, (n-2)*h);
 }
 
-void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double h, int n, int j)
+/*void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double h, int n, int j)
 {
     double mu = ro(tau, 0);
     double r = 0;
     double j_tau = j * tau;
     double j_1_tau = (j+1) * tau;
     double prev_VB_curr = 0.0, prev_VB_prev = 0.0;
-    double swap = 0.0;
+
     for (int i = 1; i < n; i++)
     {
         r = ro(tau, i*h);
@@ -233,9 +233,57 @@ void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double
     prev_VB_curr = VB[1];
     prev_VB_prev = VB[0];
     VB[1] = VB[1] - (pow(ro(j_1_tau, 2*h), 1.4) - pow(ro(j_1_tau, 0), 1.4)) / (2.0 * h * ro(j_1_tau, h))
-            - (mu - MY/ro(j_1_tau, h)) * (VB[2] - 2 * VB[1] + prev_VB_prev) / (h * h) + f(0, h);
+            - (mu - MY/ro(j_1_tau, h)) * (VB[2] - 2 * VB[1] + prev_VB_prev) / (h * h) + f(j_tau, h);
 
     for (int i = 1; i < n-3; i++)
+    {   prev_VB_prev = prev_VB_curr;
+        prev_VB_curr = VB[i+1];
+
+        V[i]    = 1.0 + tau * 2.0 * mu / (h * h);
+        VR[i]   =   tau / (6.0 * h) * (VB[i+1] + VB[i+2]) - mu * tau / (h * h);
+        VL[i-1] = - tau / (6.0 * h) * (VB[i+1] + prev_VB_prev) - mu * tau / (h * h);
+
+        VB[i+1] = VB[i+1] - (pow(ro(j_1_tau, (i+2)*h), 1.4) - pow(ro(j_1_tau, i*h), 1.4)) / (2.0 * h * ro(j_1_tau, (i+1)*h))
+                - (mu - MY/ro(j_1_tau, (i+1)*h)) * (VB[i+2] - 2 * VB[i+1] + prev_VB_prev) / (h * h) + f(j_tau, (i+1)*h);
+    }
+
+    prev_VB_prev = prev_VB_curr;
+    prev_VB_curr = VB[n-2];
+
+     V [n-3] = 1.0 + tau * 2.0 * mu / (h * h);
+     VL[n-4] = - tau / (6.0 * h) * (VB[n-2] + VB[n-3]) - mu * tau / (h * h);
+     VB[n-2] = VB[n-2] - (pow(ro(j_1_tau, (n-1)*h), 1.4) - pow(ro(j_1_tau, (n-3)*h), 1.4)) / (2.0 * h * ro(j_1_tau, (n-2)*h))
+             - (mu - MY/ro(j_1_tau, (n-2)*h)) * (VB[n-1] - 2 * VB[n-2] + prev_VB_prev) / (h * h) + f(j_tau, (n-2)*h);
+}*/
+
+/*void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double h, int n, int j)
+{
+    double mu = ro(tau, 0);
+    double r = 0;
+    double j_tau = j * tau;
+    double j_1_tau = (j+1) * tau;
+    double prev_VB_curr = 0.0, prev_VB_prev = 0.0;
+
+    for (int i = 1; i < n; i++)
+    {
+        r = ro(tau, i*h);
+        if (r < mu)
+            mu = r;
+    }
+    mu = MY / mu;
+
+
+    VB[0]   = 0.0;
+    VB[n-1] = 0.0;
+
+    VR[1] = tau / (6.0 * h) * (u(j_tau, h) + u(j_tau, 2*h)) - mu * tau / (h * h);
+    V[1]  = 1.0 + tau * 2.0 * mu / (h * h);
+    prev_VB_curr = VB[1];
+    prev_VB_prev = VB[0];
+    VB[1] = u(j_tau, h) - (pow(ro(j_1_tau, 2*h), 1.4) - pow(ro(j_1_tau, 0), 1.4)) / (2.0 * h * ro(j_1_tau, h))
+            - (mu - MY/ro(j_1_tau, h)) * (u(j_tau, 2*h) - 2 * u(j_tau, h) + u(j_tau, 0)) / (h * h) + f(j_tau, h);
+
+    for (int i = 2; i < n-1; i++)
     {   prev_VB_prev = prev_VB_curr;
         prev_VB_curr = VB[i+1];
 
@@ -254,14 +302,14 @@ void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double
      VL[n-4] = - tau / (6.0 * h) * (VB[n-2] + VB[n-3]) - mu * tau / (h * h);
      VB[n-2] = VB[n-2] - (pow(ro(j_1_tau, (n-1)*h), 1.4) - pow(ro(j_1_tau, (n-3)*h), 1.4)) / (2.0 * h * ro(j_1_tau, (n-2)*h))
              - (mu - MY/ro(j_1_tau, (n-2)*h)) * (VB[n-1] - 2 * VB[n-2] + prev_VB_prev) / (h * h) + f(0, (n-2)*h);
-}
+}*/
 
 void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, double h, double tau,
                double *V, double *VB, double *VL, double *VR)
 {
     filling_H_0(HL, HR, H, HB, tau, h, n);
     ThreeDiagSolve(HB, H, HR, HL, n);
-/*(int i = 1; i < m-1; i++)
+    for (int i = 1; i < m-1; i++)
     {
         filling_H(HL, HR, H, HB, tau, h, n, i);
         ThreeDiagSolve(HB, H, HR, HL, n);
@@ -272,31 +320,31 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     for (int i = 0; i < n; i++)
     {
         diff = fabs(HB[i] - ro((m-1)*tau, i*h));
-
+        cout << "HB[" << i <<"] = " << HB[i] << " ro = " << ro((m-1)*tau, i*h) << endl;
         if (diff > res)
             res = diff;
     }
-    cout << "\nResidual is " << res << endl << endl;*/
+    cout << "\nResidual is " << res << endl << endl;
 
     filling_V_0(VL, V, VR, VB, tau, h, n);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);
 
-    //for (int i = 1; i < m-1; i++)
-    //{
-    //    filling_H(HL, HR, H, HB, tau, h, n, i);
-    //    ThreeDiagSolve(HB, H, HR, HL, n);
-    //}
+    /*for (int i = 1; i < m-1; i++)
+    {
+        filling_V(VL, VR, V, VB, tau, h, n, i);
+        ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+    }
 
     double res = -1.0;
     double diff = 0.0;
     for (int i = 0; i < n; i++)
     {
-        diff = fabs(VB[i] - ro((m-1)*tau, i*h));
-
+        diff = fabs(VB[i] - u((m-1)*tau, i*h));
+        cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
         if (diff > res)
         res = diff;
     }
-    cout << "\nResidual is " << res << endl << endl;
+    cout << "\nResidual is " << res << endl << endl;*/
 }
 
 
