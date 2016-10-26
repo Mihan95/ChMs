@@ -256,17 +256,18 @@ void filling_V_0(double *VL, double *V, double *VR, double *VB, double tau, doub
              - (mu - MY/ro(j_1_tau, (n-2)*h)) * (VB[n-1] - 2 * VB[n-2] + prev_VB_prev) / (h * h) + f(j_tau, (n-2)*h);
 }*/
 
-/*void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double h, int n, int j)
+void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double h, int n, int j)
 {
-    double mu = ro(tau, 0);
+
     double r = 0;
     double j_tau = j * tau;
     double j_1_tau = (j+1) * tau;
-    double prev_VB_curr = 0.0, prev_VB_prev = 0.0;
+    double mu = ro(j_1_tau, 0);
+    //double prev_VB_curr = 0.0, prev_VB_prev = 0.0;
 
     for (int i = 1; i < n; i++)
     {
-        r = ro(tau, i*h);
+        r = ro(j_1_tau, i*h);
         if (r < mu)
             mu = r;
     }
@@ -276,33 +277,33 @@ void filling_V_0(double *VL, double *V, double *VR, double *VB, double tau, doub
     VB[0]   = 0.0;
     VB[n-1] = 0.0;
 
-    VR[1] = tau / (6.0 * h) * (u(j_tau, h) + u(j_tau, 2*h)) - mu * tau / (h * h);
-    V[1]  = 1.0 + tau * 2.0 * mu / (h * h);
-    prev_VB_curr = VB[1];
-    prev_VB_prev = VB[0];
+    VR[0] = tau / (6.0 * h) * (u(j_tau, h) + u(j_tau, 2*h)) - mu * tau / (h * h);
+    V[0]  = 1.0 + tau * 2.0 * mu / (h * h);
+    //prev_VB_curr = VB[1];
+    //prev_VB_prev = VB[0];
     VB[1] = u(j_tau, h) - (pow(ro(j_1_tau, 2*h), 1.4) - pow(ro(j_1_tau, 0), 1.4)) / (2.0 * h * ro(j_1_tau, h))
             - (mu - MY/ro(j_1_tau, h)) * (u(j_tau, 2*h) - 2 * u(j_tau, h) + u(j_tau, 0)) / (h * h) + f(j_tau, h);
 
-    for (int i = 2; i < n-1; i++)
-    {   prev_VB_prev = prev_VB_curr;
-        prev_VB_curr = VB[i+1];
+    for (int i = 1; i < n-3; i++)
+    {   //prev_VB_prev = prev_VB_curr;
+        //prev_VB_curr = VB[i+1];
 
         V[i]    = 1.0 + tau * 2.0 * mu / (h * h);
-        VR[i]   =   tau / (6.0 * h) * (VB[i+1] + VB[i+2]) - mu * tau / (h * h);
-        VL[i-1] = - tau / (6.0 * h) * (VB[i+1] + prev_VB_prev) - mu * tau / (h * h);
+        VR[i]   =   tau / (6.0 * h) * (u(j_tau, (i+1)*h) + u(j_tau, (i+2)*h)) - mu * tau / (h * h);
+        VL[i-1] = - tau / (6.0 * h) * (u(j_tau, (i+1)*h) + u(j_tau, i*h)) - mu * tau / (h * h);
 
-        VB[i+1] = VB[i+1] - (pow(ro(j_1_tau, (i+2)*h), 1.4) - pow(ro(j_1_tau, i*h), 1.4)) / (2.0 * h * ro(j_1_tau, (i+1)*h))
-                - (mu - MY/ro(j_1_tau, (i+1)*h)) * (VB[i+2] - 2 * VB[i+1] + prev_VB_prev) / (h * h) + f(0, (i+1)*h);
+        VB[i+1] = u(j_tau, (i+1)*h) - (pow(ro(j_1_tau, (i+2)*h), 1.4) - pow(ro(j_1_tau, i*h), 1.4)) / (2.0 * h * ro(j_1_tau, (i+1)*h))
+                - (mu - MY/ro(j_1_tau, (i+1)*h)) * (u(j_tau, (i+2)*h) - 2 * u(j_tau, (i+1)*h) + u(j_tau, i*h)) / (h * h) + f(j_tau, (i+1)*h);
     }
 
-    prev_VB_prev = prev_VB_curr;
-    prev_VB_curr = VB[n-2];
+   //prev_VB_prev = prev_VB_curr;
+    //prev_VB_curr = VB[n-2];
 
      V [n-3] = 1.0 + tau * 2.0 * mu / (h * h);
-     VL[n-4] = - tau / (6.0 * h) * (VB[n-2] + VB[n-3]) - mu * tau / (h * h);
-     VB[n-2] = VB[n-2] - (pow(ro(j_1_tau, (n-1)*h), 1.4) - pow(ro(j_1_tau, (n-3)*h), 1.4)) / (2.0 * h * ro(j_1_tau, (n-2)*h))
-             - (mu - MY/ro(j_1_tau, (n-2)*h)) * (VB[n-1] - 2 * VB[n-2] + prev_VB_prev) / (h * h) + f(0, (n-2)*h);
-}*/
+     VL[n-4] = - tau / (6.0 * h) * (u(j_tau, (n-2)*h) + u(j_tau, (n-3)*h)) - mu * tau / (h * h);
+     VB[n-2] = u(j_tau, (n-2)*h) - (pow(ro(j_1_tau, (n-1)*h), 1.4) - pow(ro(j_1_tau, (n-3)*h), 1.4)) / (2.0 * h * ro(j_1_tau, (n-2)*h))
+             - (mu - MY/ro(j_1_tau, (n-2)*h)) * (u(j_tau, (n-1)*h) - 2 * u(j_tau, (n-2)*h) + u(j_tau, (n-3)*h)) / (h * h) + f(j_tau, (n-2)*h);
+}
 
 void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, double h, double tau,
                double *V, double *VB, double *VL, double *VR)
@@ -328,15 +329,24 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
 
     filling_V_0(VL, V, VR, VB, tau, h, n);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);
-
-    /*for (int i = 1; i < m-1; i++)
+    /*for (int i = 0; i < n; i++)
     {
-        filling_V(VL, VR, V, VB, tau, h, n, i);
-        ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+        cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
     }
 
-    double res = -1.0;
-    double diff = 0.0;
+    for (int i = 1; i < m-1; i++)
+    {
+        filling_V(VL, V, VR, VB, tau, h, n, i);
+        ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+        for (int i = 0; i < n; i++)
+        {
+            cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
+        }
+
+    }
+
+    res = -1.0;
+
     for (int i = 0; i < n; i++)
     {
         diff = fabs(VB[i] - u((m-1)*tau, i*h));
