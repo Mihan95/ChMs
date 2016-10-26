@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#define MY        0.01
+#define MY        0.1
 #define M_TWOPI  (M_PI * 2.0)
 
 using namespace std;
@@ -141,17 +141,17 @@ void filling_H_0(double *HL, double *HR, double *H, double *HB, double tau, doub
                                 + ro((n-1)*h) * (u((n-3)*h) - 2.5 * u((n-2)*h) - 0.5 * u((n-4)*h)));
 }
 
-void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i)
+/*void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i)
 {
     int i_tau = i * tau;
 
     HR[0]  = tau * 0.5 * u(i_tau, h) / h;
-    H[0] = 1.0 - tau * 0.5 * /*u(i_tau, 0)*/0 / h;
+    H[0] = 1.0 - tau * 0.5 * u(i_tau, 0) / h;
     HB[0]  = f0(i_tau, 0) + HB[0]
             - (tau * 0.5 / h)
-            * HB[0] * (u(i_tau, h) - /*u(i_tau, 0)*/0) + (tau * 0.25 / h) * (2.0 * HB[2] * u(i_tau, 2*h)
+            * HB[0] * (u(i_tau, h) - u(i_tau, 0)) + (tau * 0.25 / h) * (2.0 * HB[2] * u(i_tau, 2*h)
                                                                    - 2.5 * HB[1] * u(i_tau, h)
-                                                                   + 2.0 * HB[0] * /*u(i_tau, 0)*/0
+                                                                   + 2.0 * HB[0] * u(i_tau, 0)
                                                                  - 0.5 * HB[3] * u(i_tau, 3*h)
                                                           + HB[0] * (2.0 * u(i_tau, 2*h) - 2.5 * u(i_tau, h) - 0.5 * ro(i_tau, 3*h)));
 
@@ -165,11 +165,43 @@ void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double
         HL[j-1] = - (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j-1)*h));
     }
 
-    HB[n-1] = f0(i_tau, (n-1)*h) + HM - (0.5 * tau / h) * HM * (/*u(i_tau, (n-1)*h)*/0 - u(i_tau, (n-2)*h))
-            - (0.25 * tau / h) * (2.0 * HM * 0/*u(i_tau, (n-1)*h)*/ - 2.5 * HM_1 * u(i_tau, (n-2)*h)
+    HB[n-1] = f0(i_tau, (n-1)*h) + HM - (0.5 * tau / h) * HM * (u(i_tau, (n-1)*h)- u(i_tau, (n-2)*h))
+            - (0.25 * tau / h) * (2.0 * HM * u(i_tau, (n-1)*h) - 2.5 * HM_1 * u(i_tau, (n-2)*h)
                                   + 2.0 * HM_2 * u(i_tau, (n-3)*h) - 0.5 * HM_3 * u(i_tau, (n-4)*h)
                                   + HM * (-0.5 * u(i_tau, (n-4)*h) - 2.5 * u(i_tau, (n-2)*h) + u(i_tau, (n-3)*h)));
-    H[n-1]  = 1.0 + (0.5 * tau / h) * 0/*u(i_tau, (n-1)*h)*/;
+    H[n-1]  = 1.0 + (0.5 * tau / h) * u(i_tau, (n-1)*h);
+    HL[n-2] = - (0.5 * tau / h) * u(i_tau, (n-2)*h);
+}*/
+
+void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i)
+{
+    double i_tau = i * tau;
+
+    HR[0]  = tau * 0.5 * u(i_tau, h) / h;
+    H[0] = 1.0 - tau * 0.5 * u(i_tau, 0) / h;
+    HB[0]  = f0(i_tau, 0) + ro(i_tau, 0)
+            - (tau * 0.5 / h)
+            * ro(i_tau, 0) * (u(i_tau, h) - u(i_tau, 0)) + (tau * 0.25 / h) * (2.0 * ro(i_tau, 2*h) * u(i_tau, 2*h)
+                                                                   - 2.5 * ro(i_tau, h) * u(i_tau, h)
+                                                                   + 2.0 * ro(i_tau, 0) * u(i_tau, 0)
+                                                                 - 0.5 * ro(i_tau, 3*h) * u(i_tau, 3*h)
+                                                          + ro(i_tau, 0) * (2.0 * u(i_tau, 2*h) - 2.5 * u(i_tau, h) - 0.5 * ro(i_tau, 3*h)));
+
+    //double HM = HB[n-1], HM_1 = HB[n-2], HM_2 = HB[n-3], HM_3 = HB[n-4];
+
+    for (int j = 1; j < n - 1; j++)
+    {
+        HB[j] = f0(i_tau, j*h) + ro(i_tau, j*h) * (1.0 - (0.25 * tau / h) * (u(i_tau, (j+1)*h) - u(i_tau, (j-1)*h)));
+        H[j]  = 1.0;
+        HR[j] = (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j+1)*h));
+        HL[j-1] = - (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j-1)*h));
+    }
+
+    HB[n-1] = f0(i_tau, (n-1)*h) + ro(i_tau, (n-1)*h) - (0.5 * tau / h) * ro(i_tau, (n-1)*h) * (u(i_tau, (n-1)*h)- u(i_tau, (n-2)*h))
+            - (0.25 * tau / h) * (2.0 * ro(i_tau, (n-1)*h) * u(i_tau, (n-1)*h) - 2.5 * ro(i_tau, (n-2)*h) * u(i_tau, (n-2)*h)
+                                  + 2.0 * ro(i_tau, (n-3)*h) * u(i_tau, (n-3)*h) - 0.5 * ro(i_tau, (n-4)*h) * u(i_tau, (n-4)*h)
+                                  + ro(i_tau, (n-1)*h) * (-0.5 * u(i_tau, (n-4)*h) - 2.5 * u(i_tau, (n-2)*h) + u(i_tau, (n-3)*h)));
+    H[n-1]  = 1.0 + (0.5 * tau / h) * u(i_tau, (n-1)*h);
     HL[n-2] = - (0.5 * tau / h) * u(i_tau, (n-2)*h);
 }
 
@@ -310,10 +342,21 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
 {
     filling_H_0(HL, HR, H, HB, tau, h, n);
     ThreeDiagSolve(HB, H, HR, HL, n);
+    for (int i = 0; i < n; i++)
+    {
+        cout << "HB[" << i <<"] = " << HB[i] << " ro = " << ro(1*tau, i*h) << endl;
+    }
+    cout << endl;
     for (int i = 1; i < m-1; i++)
     {
         filling_H(HL, HR, H, HB, tau, h, n, i);
         ThreeDiagSolve(HB, H, HR, HL, n);
+        for (int j = 0; j < n; j++)
+        {
+            cout << "HB[" << j <<"] = " << HB[j] << " ro = " << ro((i+1)*tau, j*h) << endl;
+        }
+        cout << endl;
+
     }
 
     double res = -1.0;
@@ -321,28 +364,19 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     for (int i = 0; i < n; i++)
     {
         diff = fabs(HB[i] - ro((m-1)*tau, i*h));
-        cout << "HB[" << i <<"] = " << HB[i] << " ro = " << ro((m-1)*tau, i*h) << endl;
+        //cout << "HB[" << i <<"] = " << HB[i] << " ro = " << ro((m-1)*tau, i*h) << endl;
         if (diff > res)
             res = diff;
     }
     cout << "\nResidual is " << res << endl << endl;
 
-    filling_V_0(VL, V, VR, VB, tau, h, n);
+    /*filling_V_0(VL, V, VR, VB, tau, h, n);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);
-    /*for (int i = 0; i < n; i++)
-    {
-        cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
-    }
 
     for (int i = 1; i < m-1; i++)
     {
         filling_V(VL, V, VR, VB, tau, h, n, i);
         ThreeDiagSolve(VB+1, V, VR, VL, n-2);
-        for (int i = 0; i < n; i++)
-        {
-            cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
-        }
-
     }
 
     res = -1.0;
@@ -350,7 +384,6 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     for (int i = 0; i < n; i++)
     {
         diff = fabs(VB[i] - u((m-1)*tau, i*h));
-        cout << "VB[" << i <<"] = " << VB[i] << " u = " << u((m-1)*tau, i*h) << endl;
         if (diff > res)
         res = diff;
     }
