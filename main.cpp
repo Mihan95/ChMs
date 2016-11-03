@@ -26,4 +26,13 @@ int main(int argc, char *argv[])
     double tau = T / (m - 1);
 
     calculate(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
+
+    delete [] H;
+    delete [] HL;
+    delete [] HR;
+    delete [] HB;
+    delete [] V;
+    delete [] VL;
+    delete [] VR;
+    delete [] VB;
 }

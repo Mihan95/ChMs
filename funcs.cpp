@@ -207,9 +207,9 @@ void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double
     H[n-1]  = 1.0 + (0.5 * tau / h) * u(i_tau, (n-1)*h);
     HL[n-2] = - (0.5 * tau / h) * u(i_tau, (n-2)*h);
 
-    for(int i = 0; i < 10; i++)
+    /*for(int i = 0; i < 10; i++)
         printf("%4.15f\n", HB[i]);
-     printf("%4.15f\n", HB[n-1]);
+     printf("%4.15f\n", HB[n-1]);*/
 }
 
 void filling_V_0(double *VL, double *V, double *VR, double *VB, double tau, double h, int n)
@@ -340,11 +340,6 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
 {
     //filling_H_0(HL, HR, H, HB, tau, h, n);
     //ThreeDiagSolve(HB, H, HR, HL, n);
-    /*for (int i = 0; i < n; i++)
-    {
-        cout << "HB[" << i <<"] = " << HB[i] << " ro = " << ro(1*tau, i*h) << endl;
-    }*/
-    //cout << endl;
     /*for (int i = 1; i < m-1; i++)
     {
         filling_H(HL, HR, H, HB, tau, h, n, i);
@@ -365,16 +360,18 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     }
     cout << "\nResidual H is " << res << endl << endl;
 
-    /*filling_V_0(VL, V, VR, VB, tau, h, n);
-    ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+    //filling_V_0(VL, V, VR, VB, tau, h, n);
+    //ThreeDiagSolve(VB+1, V, VR, VL, n-2);
 
-    for (int i = 1; i < m-1; i++)
+    /*for (int i = 1; i < m-1; i++)
     {
         filling_V(VL, V, VR, VB, tau, h, n, i);
         ThreeDiagSolve(VB+1, V, VR, VL, n-2);
     }*/
+
     filling_V(VL, V, VR, VB, tau, h, n, m-2);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+
     res = -1.0;
 
     for (int i = 0; i < n; i++)
