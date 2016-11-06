@@ -1,6 +1,6 @@
 CC = g++ -c
 LD = g++
-OPT = -lm -O3 --fast-math
+OPT = -lm -g -pg -O3 --fast-math
 C_FLAGS = -g -Wall -W $(OPT)
 O_FLAGS = $(C_FLAGS)
 NAME = a.out
