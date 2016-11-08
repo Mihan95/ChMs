@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     double h   = X / (n - 1);
     double tau = T / (m - 1);
-    cout << h << " " << tau << endl;
+    cout << "h = " << h << " tau =  " << tau << endl;
 
     calculate(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
 }
