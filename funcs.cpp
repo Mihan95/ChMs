@@ -257,6 +257,7 @@ void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double
 void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, double h, double tau,
                double *V, double *VB, double *VL, double *VR)
 {
+
     cout << "MY = " << MY << endl;
     FILE *fh = fopen("h.txt", "w");
     FILE *fv = fopen("v.txt", "w");
@@ -318,6 +319,7 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
 
     /*filling_V(VL, V, VR, VB, tau, h, n, m-2);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);*/
+
     res = -1.0;
 
     for (int i = 0; i < n; i++)

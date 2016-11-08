@@ -27,4 +27,13 @@ int main(int argc, char *argv[])
     cout << "h = " << h << " tau =  " << tau << endl;
 
     calculate(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
+
+    delete [] H;
+    delete [] HL;
+    delete [] HR;
+    delete [] HB;
+    delete [] V;
+    delete [] VL;
+    delete [] VR;
+    delete [] VB;
 }
