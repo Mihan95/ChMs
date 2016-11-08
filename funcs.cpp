@@ -122,17 +122,17 @@ void filling_H_0(double *HL, double *HR, double *H, double *HB, double tau, doub
                                 + ro((n-1)*h) * (2.0 * u((n-3)*h) - 2.5 * u((n-2)*h) - 0.5 * u((n-4)*h)));
 }
 
-void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i)
+void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double h, int n, int i, double *V)
 {
     double i_tau = i * tau;
 
-    HR[0]  = tau * 0.5 * u(i_tau, h) / h;
+    HR[0]  = tau * 0.5 * V[1] / h;
     H[0] = 1.0;
 
-    HB[0]  = f0(i_tau, 0) * tau + ro(i_tau, 0) - (0.5 * tau / h) * ro(i_tau, 0) * u(i_tau, h)
-            + (0.25 * tau / h) * (- 2.5 * ro(i_tau, h) * u(i_tau, h)
-                                  + 2.0 * ro(i_tau, (2*h)) * u(i_tau, 2*h) - 0.5 * ro(i_tau, 3*h) * u(i_tau, 3*h)
-                                  + ro(i_tau, 0) * (-0.5 * u(i_tau, 3*h) - 2.5 * u(i_tau, h) + 2.0 * u(i_tau, 2*h)));
+    HB[0]  = f0(i_tau, 0) * tau + ro(i_tau, 0) - (0.5 * tau / h) * ro(i_tau, 0) * V[1]
+            + (0.25 * tau / h) * (- 2.5 * ro(i_tau, h) * V[1]
+                                  + 2.0 * ro(i_tau, 2*h) * V[2] - 0.5 * ro(i_tau, 3*h) * V[3]
+                                  + ro(i_tau, 0) * (-0.5 * V[3] - 2.5 * V[1] + 2.0 * V[2]));
 
 
 
@@ -140,18 +140,18 @@ void filling_H(double *HL, double *HR, double *H, double *HB, double tau, double
 
     for (int j = 1; j < n - 1; j++)
     {
-        HB[j] = f0(i_tau, j*h) * tau + ro(i_tau, j*h) * (1.0 - (0.25 * tau / h) * (u(i_tau, (j+1)*h) - u(i_tau, (j-1)*h)));
+        HB[j] = f0(i_tau, j*h) * tau + ro(i_tau, j*h) * (1.0 - (0.25 * tau / h) * (V[j+1] - V[j-1]));
         H[j]  = 1.0;
-        HR[j] = (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j+1)*h));
-        HL[j-1] = - (0.25 * tau / h) * (u(i_tau, j*h) + u(i_tau, (j-1)*h));
+        HR[j] = (0.25 * tau / h) * (V[j] + V[j+1]);
+        HL[j-1] = - (0.25 * tau / h) * (V[j] + V[j-1]);
     }
 
-    HB[n-1] = f0(i_tau, (n-1)*h) * tau + ro(i_tau, (n-1)*h) - (0.5 * tau / h) * ro(i_tau, (n-1)*h) * (- u(i_tau, (n-2)*h))
-            - (0.25 * tau / h) * (- 2.5 * ro(i_tau, (n-2)*h) * u(i_tau, (n-2)*h)
-                                  + 2.0 * ro(i_tau, (n-3)*h) * u(i_tau, (n-3)*h) - 0.5 * ro(i_tau, (n-4)*h) * u(i_tau, (n-4)*h)
-                                  + ro(i_tau, (n-1)*h) * (-0.5 * u(i_tau, (n-4)*h) - 2.5 * u(i_tau, (n-2)*h) + 2.0 * u(i_tau, (n-3)*h)));
+    HB[n-1] = f0(i_tau, (n-1)*h) * tau + ro(i_tau, (n-1)*h) - (0.5 * tau / h) * ro(i_tau, (n-1)*h) * (- V[n-2])
+            - (0.25 * tau / h) * (- 2.5 * ro(i_tau, (n-2)*h) * V[n-2]
+                                  + 2.0 * ro(i_tau, (n-3)*h) * V[n-3] - 0.5 * ro(i_tau, (n-4)*h) * V[n-4]
+                                  + ro(i_tau, (n-1)*h) * (-0.5 * V[n-4] - 2.5 * V[n-2] + 2.0 * V[n-3]));
     H[n-1]  = 1.0;
-    HL[n-2] = - (0.5 * tau / h) * u(i_tau, (n-2)*h);
+    HL[n-2] = - (0.5 * tau / h) * V[n-2];
 }
 
 void filling_V_0(double *VL, double *V, double *VR, double *VB, double tau, double h, int n)
@@ -241,27 +241,49 @@ void filling_V(double *VL, double *V, double *VR, double *VB, double tau, double
 void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, double h, double tau,
                double *V, double *VB, double *VL, double *VR)
 {
-    filling_H_0(HL, HR, H, HB, tau, h, n);
-    ThreeDiagSolve(HB, H, HR, HL, n);
     FILE *fh = fopen("h.txt", "w");
     FILE *fv = fopen("v.txt", "w");
+
     fprintf(fh, "%d %d %3.15f %3.15f", n, m, h, tau); fprintf(fh, "\n");
+    fprintf(fv, "%d %d %3.15f %3.15f", n, m, h, tau); fprintf(fv, "\n");
+
+    filling_H_0(HL, HR, H, HB, tau, h, n);
+    ThreeDiagSolve(HB, H, HR, HL, n);
+
+    filling_V_0(VL, V, VR, VB, tau, h, n);
+    ThreeDiagSolve(VB+1, V, VR, VL, n-2);
+
     for (int i = 0; i < n; i++)
     {
         fprintf(fh, "%3.15f\n", HB[i]);
     }
     fprintf(fh, "\n");
 
+    for (int i = 0; i < n; i++)
+    {
+        fprintf(fv, "%3.15f\n", VB[i]);
+    }
+    fprintf(fv, "\n");
+
     for (int i = 1; i < m-1; i++)
     {
-        filling_H(HL, HR, H, HB, tau, h, n, i);
+        filling_H(HL, HR, H, HB, tau, h, n, i, VB);
         ThreeDiagSolve(HB, H, HR, HL, n);
+
+        filling_V(VL, V, VR, VB, tau, h, n, i);
+        ThreeDiagSolve(VB+1, V, VR, VL, n-2);
 
         for (int i = 0; i < n; i++)
         {
             fprintf(fh, "%3.15f\n", HB[i]);
         }
         fprintf(fh, "\n");
+
+        for (int i = 0; i < n; i++)
+        {
+            fprintf(fv, "%3.15f\n", VB[i]);
+        }
+        fprintf(fv, "\n");
     }
 
     /*filling_H(HL, HR, H, HB, tau, h, n, m-2);
@@ -277,26 +299,6 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
             res = diff;
     }
     cout << "\nResidual H is " << res << endl << endl;
-
-    filling_V_0(VL, V, VR, VB, tau, h, n);
-    ThreeDiagSolve(VB+1, V, VR, VL, n-2);
-    fprintf(fv, "%d %d %3.15f %3.15f", n, m, h, tau);
-    fprintf(fv, "\n");
-    for (int i = 0; i < n; i++)
-    {
-        fprintf(fv, "%3.15f\n", VB[i]);
-    }
-    fprintf(fv, "\n");
-    for (int i = 1; i < m-1; i++)
-    {
-        filling_V(VL, V, VR, VB, tau, h, n, i);
-        ThreeDiagSolve(VB+1, V, VR, VL, n-2);
-        for (int i = 0; i < n; i++)
-        {
-            fprintf(fv, "%3.15f\n", VB[i]);
-        }
-        fprintf(fv, "\n");
-    }
 
     /*filling_V(VL, V, VR, VB, tau, h, n, m-2);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);*/

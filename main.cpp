@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
 
     parse_command_line(argc, argv, T, X, n, m);
 
-
-
     double *H  = new double [n];
     double *HL = new double [n-1];
     double *HR = new double [n-1];
@@ -26,6 +24,7 @@ int main(int argc, char *argv[])
 
     double h   = X / (n - 1);
     double tau = T / (m - 1);
+    cout << h << " " << tau << endl;
 
     calculate(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
 }
