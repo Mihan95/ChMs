@@ -143,7 +143,7 @@ void Window::paintEvent (QPaintEvent * /* event */)
   QPainter painter (this);
   double max_y;
   double min_y;
-  painter.setRenderHint(QPainter::Qt4CompatiblePainting);
+  //painter.setRenderHint(QPainter::Qt4CompatiblePainting);
   if (m_current_function_is_g)
     {
       max_y = m_max_g;
@@ -180,7 +180,7 @@ void Window::paintEvent (QPaintEvent * /* event */)
   char str[MESSAGE_LEN];
   painter.setPen ("black");
   if (m_current_function_is_g)
-    sprintf (str, "g (x, %1.3g)", m_current_layer * m_delta_t);
+    sprintf (str, "h (x, %1.3g)", m_current_layer * m_delta_t);
   else
     sprintf (str, "v (x, %1.3g)", m_current_layer * m_delta_t);
   painter.drawText (0, INDENT, str);
