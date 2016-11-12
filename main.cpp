@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
 
     parse_command_line(argc, argv, T, X, n, m);
 
+    m++;
+    n++;
+
     double *H  = new double [n];
     double *HL = new double [n-1];
     double *HR = new double [n-1];
@@ -27,6 +30,7 @@ int main(int argc, char *argv[])
     cout << "h = " << h << " tau =  " << tau << endl;
 
     calculate(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
+    //calculate_barsting(H, HB, HL, HR, n, m, h, tau, V, VB, VL, VR);
 
     delete [] H;
     delete [] HL;
