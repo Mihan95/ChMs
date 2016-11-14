@@ -354,11 +354,11 @@ void calculate_barsting(double *H, double *HB, double *HL, double *HR, int n, in
     cout << "Mass is " << integr_ << endl;
 
     /***Первое разрывное решение***/
-    cout << "Mass residual is " << fabs(11 - integr) << endl;
+    cout << "Mass residual is " << fabs(11 - integr_) << endl;
     /******************************/
 
     /***Второе разрывное решение***/
-    cout << "Mass residual is " << fabs(10 - integr) << endl;
+    cout << "Mass residual is " << fabs(10 - integr_) << endl;
     /******************************/
 
 }
