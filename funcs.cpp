@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#define MY        0.1
+#define MY        0.001
 #define M_TWOPI  (M_PI * 2.0)
 #define GAMMA 1.4
 
@@ -53,37 +53,15 @@ double f0(double t, double x)
 
 double f(double t, double x)
 {
-    return (- ro(t, x) * sin(M_PI*x*x*0.01) * sin(M_TWOPI*t) * M_TWOPI
-           + ro(t, x) * u(t, x) * cos(M_TWOPI*t) * cos(M_PI*x*x*0.01) * M_PI * x / 50.0
-           - 1.4 * M_PI * 0.1 * exp(1.4*t) * sin(M_PI*x*0.1) * (cos(M_PI*x*0.1) + 1.5)
+    double ro_ = ro(t, x);
+
+    return (- ro_ * sin(M_PI*x*x*0.01) * sin(M_TWOPI*t) * M_TWOPI
+           + ro_ * u(t, x) * cos(M_TWOPI*t) * cos(M_PI*x*x*0.01) * M_PI * x / 50.0
+           - 1.4 * M_PI * 0.1 * exp(1.4*t) * sin(M_PI*x*0.1) * pow((cos(M_PI*x*0.1) + 1.5), 0.4)
            - MY * cos(M_TWOPI*t) * M_PI * 0.02 * (cos(M_PI*x*x*0.01) - M_PI*x*x*0.02 * sin(M_PI*x*x*0.01)));
 
-    /*-2. * M_PI * ro (t, x) * sin (M_PI * 0.01 * x * x) * sin (2. * M_PI * t)
-   + 0.02 * M_PI * ro (t, x) * u (t, x) * cos (2. * M_PI * t) * cos (M_PI * 0.01 * x * x) * x
-   - 0.1 * M_PI * GAMMA * pow (ro(t, x), GAMMA - 1.) * exp (t) * sin (M_PI * 0.1 * x)
-   - 0.02 * MY * cos (2. * M_PI * t)
-   * (cos (M_PI * 0.01 * x * x) - 0.02 * M_PI * x * x * sin (M_PI * 0.01 * x * x));*/
 }
 /********************************************/
-
-/********Первое разрывное решение************/
-/*double u(double t, double x)
-{
-    if ((fabs(x - 10.0) < 1e-15) || (fabs(x) < 1e-15))
-            return 0.0;
-}
-
-double ro(double x)
-{
-    if (x < 4.5 || x > 5.5)
-        return 1.0;
-    else return 2.0;
-}
-
-double u(double x)
-{
-    return 0.0;
-}*/
 
 void ThreeDiagSolve( double *b, double *a, double *c, double *d, int n )
 {
@@ -337,7 +315,7 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
         filling_V(VL, V, VR, VB, tau, h, n, i, HB);
         ThreeDiagSolve(VB+1, V, VR, VL, n-2);
 
-        for (int i = 0; i < n; i++)
+        /*for (int i = 0; i < n; i++)
         {
             fprintf(fh, "%3.15f\n", HB[i]);
         }
@@ -347,7 +325,7 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
         {
             fprintf(fv, "%3.15f\n", VB[i]);
         }
-        fprintf(fv, "\n");
+        fprintf(fv, "\n");*/
     }
 
     /*filling_H(HL, HR, H, HB, tau, h, n, m-2);
@@ -361,7 +339,7 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
         if (diff > res)
             res = diff;
     }
-    cout << "\nResidual H is " << res << endl << endl;
+    cout << "\nResidual H is " << res << endl;
 
     /*filling_V(VL, V, VR, VB, tau, h, n, m-2);
     ThreeDiagSolve(VB+1, V, VR, VL, n-2);*/
@@ -374,5 +352,6 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
         if (diff > res)
         res = diff;
     }
-    cout << "\nResidual V is " << res << endl << endl;
+    cout << "Residual V is " << res << endl << "*************************************" << endl;
+
 }
