@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#define MY        0.1
+#define MY        0.01
 #define M_TWOPI  (M_PI * 2.0)
 #define GAMMA 1.4
 
@@ -312,6 +312,10 @@ void calculate(double *H, double *HB, double *HL, double *HR, int n, int m, doub
     fprintf(fv, "%d %d %3.15f %3.15f", n, m, h, tau); fprintf(fv, "\n");
 
     filling_H_0(HL, HR, H, HB, tau, h, n);
+    /*for (int i = 0; i < n; i++)
+    {
+        cout << HB[i] << endl;
+    }*/
     ThreeDiagSolve(HB, H, HR, HL, n);
 
     filling_V_0(VL, V, VR, VB, tau, h, n, HB);
